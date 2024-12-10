@@ -2,6 +2,7 @@ import './App.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Main from './pages/Main';
 import TocList from './pages/TocList';
+import Scroll from './pages/Scroll';
 
 function App() {
 
@@ -11,7 +12,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/list" element={<TocList />} />
-        {/* <Route path="/view" element={<PostView />} /> */}
+        <Route path="/scroll" element={<Scroll />} />
       </Routes>
       {/* 푸터 */}
     </BrowserRouter>

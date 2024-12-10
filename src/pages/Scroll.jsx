@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axios";
-import TocItem from "./TocItem";
-import SearchBar from "../components/SearchBar";
 
-export default function TocList() {
+export default function Scroll() {
+
     const [page, setPage] = useState(1);
     const [tocData, setTocData] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
@@ -46,27 +45,25 @@ export default function TocList() {
                 }
             }
         };
-
+        
         window.addEventListener('scroll', handleScroll);
             return () => window.removeEventListener('scroll', handleScroll);
         }, []);
 
-
-
     return (
         <>
-            <h2 style={{ textAlign: 'center' }}>책 목차 리스트</h2>
+            <h2 style={{ textAlign: 'center' }}>스크롤 연습</h2>
             <div>검색 결과: {totalCount}</div>
-            {/* 검색 발생 시 원래 데이터 include하기  */}
-            {/* 검색어 받기  */}
-            <SearchBar 
-            
-            />
+
             <div>
                 {tocData.map((data, i) => (
-                    <TocItem key={`${data.toc_id}-${i}`} data={data} />
+                    <ul key={i}>
+                        <li>{data.toc_id}</li>
+                        <li>{data.toc_title_ko}</li>
+                    </ul>
                 ))}
             </div>
+            
         </>
     );
 }
