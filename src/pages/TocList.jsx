@@ -8,65 +8,71 @@ export default function TocList() {
     const [tocData, setTocData] = useState([]);
     const [totalCount, setTotalCount] = useState(0);
     const [hasNextPage, setHasNextPage] = useState(true);
+    const [term, setTerm] = useState("");
+    const [type, setType] = useState("toc_title_ko")
 
     const limit = 10;
 
     // 데이터 불러오는 api
-    const getData = async (page) => {
+    const getData = async (page, searchTerm = "") => {
         try {
-            const response = await axiosInstance.get(`data?_page=${page}&_limit=${limit}`);
+            const searchQuery = searchTerm ? `&q=${searchTerm}` : "";
+            const response = await axiosInstance.get(`data?_page=${page}&_limit=${limit}${searchQuery}`);
             const res = response.data;
             const totalCount = parseInt(response.headers['x-total-count'], 10);
-            setTocData(prevData => [...prevData, ...res]);
+            
+            if (page === 1) {
+                setTocData(res);
+            } else {
+                setTocData(prevData => [...prevData, ...res]);
+            }
+            
             setTotalCount(totalCount);
+            setHasNextPage(tocData.length < totalCount);
         } catch (e) {
             console.log(e);
         }
     }
 
     useEffect(() => {
-        getData(page);
-        setHasNextPage(tocData < totalCount)
-    }, [page]);
-
-    /**
-     * div 높이가 ~~ 되면 데이터 가져오는 api 호출
-     * api 호출 시 현재 위치 확인해 마지막 페이지면 그냥 return 하기 
-     */
+        getData(page, term);
+    }, [page, term]);
 
     useEffect(() => {
         const handleScroll = () => {
-            // 화면에 보이는 거 + 세로 스크롤 위치 (현재 보이는 영역의 가장 아래 부분의 위치) >= 문서 전체 높이
-
             if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {  
-                if(hasNextPage === true)  {
+                if(hasNextPage === true) {
                     setPage(prevPage => prevPage + 1);
-                } else {
-                    return;
                 }
             }
         };
 
         window.addEventListener('scroll', handleScroll);
-            return () => window.removeEventListener('scroll', handleScroll);
-        }, []);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [hasNextPage]);
 
+    const handleSearch = (searchTerm) => {
+        setTerm(searchTerm.term);
+        setType(searchTerm.type);
+        setPage(1); 
 
+         console.log(type);
+         
+    };
 
     return (
         <>
             <h2 style={{ textAlign: 'center' }}>책 목차 리스트</h2>
             <div>검색 결과: {totalCount}</div>
-            {/* 검색 발생 시 원래 데이터 include하기  */}
-            {/* 검색어 받기  */}
-            <SearchBar 
-            
+            <SearchBar
+                onSearchParam={handleSearch}
             />
             <div>
                 {tocData.map((data, i) => (
                     <TocItem key={`${data.toc_id}-${i}`} data={data} />
                 ))}
             </div>
+            {!hasNextPage && <div style={{ textAlign: 'center', padding: '20px' }}>더 이상 데이터가 없습니다.</div>}
         </>
     );
 }
