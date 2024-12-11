@@ -40,8 +40,11 @@ export default function SearchBar({ onSearchParam }) {
     const handleSearch = useCallback(() => {
         const searchParam = {
             term: term.current,
-            type: type.current
+            type: type.current,
+            sortType: sortType.current,
+            isDesc: isDesc.current,
         };
+        
         onSearchParam(searchParam)
     }, [onSearchParam]);
 
@@ -74,7 +77,7 @@ export default function SearchBar({ onSearchParam }) {
 
             <div>
                 <button
-                    onClick={() => handleSort('id')}
+                    onClick={() => handleSort('toc_title_ko')}
                 >
                     학교 이름 순 정렬 {sortType.current === 'toc_title_ko' && (isDesc.current ? '↓' : '↑')}
                 </button>

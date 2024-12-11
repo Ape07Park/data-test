@@ -19,6 +19,9 @@ export default function TocList() {
     const [term, setTerm] = useState("");
     const [type, setType] = useState("toc_title_ko")
 
+    const [sortType, setSortType] = useState("toc_title_ko");
+    const [isDesc, setIsDesc] = useState(false);
+
     const observeTarget = useRef();
 
     /**
@@ -98,13 +101,18 @@ export default function TocList() {
         const endIndex = startIndex + limit;
 
         // 검색어 있을경우 필터링 
-
         if (term.length !== 0) {
 
             // 필터링된 데이터
             let filtered = origianlTocData.filter(item =>
                 item[type].includes(term)
             );
+
+
+            
+
+
+            // 정렬된 데이터 넣기
             setOrigianlTocData(filtered)
         } else {
             setOrigianlTocData(origianlTocData)
@@ -167,6 +175,33 @@ export default function TocList() {
         // 무한 스크롤 스탑
         setHasNextPage(filtered.length > limit);
     };
+
+    // 정렬 함수 
+    // if (searchParams.sortType === 'toc_title_ko' & searchParams.isDesc !== null ){
+    //     // 정렬: 오름, 내림
+    //     if(searchParams.isDesc === true){
+    //         // 내림
+    //     } else{
+    //         // 오름
+    //     }
+    // } else if(searchParams.sortType === 'toc_authors' & searchParams.isDesc !== null) {
+    //      // 정렬: 오름, 내림
+    //      if(searchParams.isDesc === true){
+    //         // 내림
+    //     } else{
+    //         // 오름
+    //     }
+    // } else if (searchParams.sortType === 'related_schools' & searchParams.isDesc !== null){
+    //      // 정렬: 오름, 내림
+    //      if(searchParams.isDesc === true){
+    //         // 내림
+    //     } else{
+    //         // 오름
+    //     }
+    // } else {
+    //     // 정렬: 기본값 
+    //     return;
+    // }
 
     return (
         <>
