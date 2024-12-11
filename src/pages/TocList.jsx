@@ -148,21 +148,20 @@ export default function TocList() {
         }
 
         let filtered = null;
-
         if (searchParams.type === 'related_schools') {
-            // 검색 로직
-            // 데이터 중 related_schools[0].primaryname_ko
+
+            // 관련 학교 검색 시
             filtered = origianlTocData.filter(item =>
-                item[type][0].primaryname_ko.includes(searchParams.term)
+                item[searchParams.type][0].primaryname_ko.includes(searchParams.term)
             );
 
         } else {
             // 검색 로직
             filtered = origianlTocData.filter(item =>
-                item[type].includes(searchParams.term)
+                item[searchParams.type].includes(searchParams.term)
             );
         }
-        
+
         setFilteredTocData(filtered);
         setTotalCount(filtered.length);
         // 무한 스크롤 스탑

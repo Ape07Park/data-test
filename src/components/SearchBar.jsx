@@ -9,8 +9,13 @@ export default function SearchBar({ onSearchParam }) {
 
     const term = useRef("");
     const type = useRef("toc_title_ko");
-    // const sortType = useRef("");
-    // const isDesc = useRef(false);
+
+    // 타입에 따른 정렬
+    const sortType = useRef("");
+    const isDesc = useRef(false);
+
+
+    // TODO 카테고리 변경은 검색 클릭 시 작동하도록 하기
 
     // 검색어 변경 핸들러
     const handleInputChange = (event) => {
@@ -20,7 +25,8 @@ export default function SearchBar({ onSearchParam }) {
     // 타입 변경 핸들러
     const handleType = (e) => {
         type.current = e.target.value;
-        handleSearch();
+        // 검색 버튼 클릭 시 타입 전송 
+        // handleSearch()
     }
 
     const onKeyPress = (e) => {
@@ -40,24 +46,24 @@ export default function SearchBar({ onSearchParam }) {
     }, [onSearchParam]);
 
     // 정렬 핸들러
-    // const handleSort = (newSortType) => {
-    //     if (newSortType === sortType.current) {
-    //         isDesc.current = !isDesc.current;
-    //     } else {
-    //         sortType.current = newSortType;
-    //         isDesc.current = false;
-    //     }
-    //     handleSearch();
-    // };
+    const handleSort = (newSortType) => {
+        if (newSortType === sortType.current) {
+            isDesc.current = !isDesc.current;
+        } else {
+            sortType.current = newSortType;
+            isDesc.current = false;
+        }
+        handleSearch();
+    };
 
     return (
         <>
-            <select onChange={handleType} value={type.current}>
+            <select onChange={handleType}>
                 <option value="toc_title_ko">학교 이름</option>
                 <option value="toc_authors">저자</option>
                 <option value="related_schools">관련 학교</option>
             </select>
-            
+
             <input
                 type="text"
                 placeholder="검색"
@@ -66,28 +72,25 @@ export default function SearchBar({ onSearchParam }) {
             />
             <button onClick={handleSearch}>검색</button>
 
-            {/* <div>
+            <div>
                 <button
                     onClick={() => handleSort('id')}
-                    className={`${styles.sortButton} ${sortType.current === 'id' && styles.active} ${isDesc.current && styles.desc}`}
                 >
-                    id 순 정렬 {sortType.current === 'id' && (isDesc.current ? '↓' : '↑')}
+                    학교 이름 순 정렬 {sortType.current === 'toc_title_ko' && (isDesc.current ? '↓' : '↑')}
                 </button>
 
                 <button
-                    onClick={() => handleSort('title')}
-                    className={`${styles.sortButton} ${sortType.current === 'title' && styles.active} ${isDesc.current && styles.desc}`}
+                    onClick={() => handleSort('toc_authors')}
                 >
-                    이름 순 정렬 {sortType.current === 'title' && (isDesc.current ? '↓' : '↑')}
+                    이름 순 정렬 {sortType.current === 'toc_authors' && (isDesc.current ? '↓' : '↑')}
                 </button>
 
                 <button
-                    onClick={() => handleSort('body')}
-                    className={`${styles.sortButton} ${sortType.current === 'body' && styles.active} ${isDesc.current && styles.desc}`}
+                    onClick={() => handleSort('related_schools')}
                 >
-                    컨텐츠 순 정렬 {sortType.current === 'body' && (isDesc.current ? '↓' : '↑')}
+                    관련 학교 순 정렬 {sortType.current === 'related_schools' && (isDesc.current ? '↓' : '↑')}
                 </button>
-            </div> */}
+            </div>
 
         </>
     )
