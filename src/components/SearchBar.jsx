@@ -25,28 +25,18 @@ export default function SearchBar({ onSearchParam }) {
 
     const onKeyPress = (e) => {
         if (e.key === 'Enter') {
-            // handleSearch()
+            handleSearch();
         }
-    };
-
-   
-
-
-    const searchParam = {
-        term: "",
-        type: 'title',
-        sortType: "id",
-        isDesc: false,
     };
 
     // 검색 버튼 클릭 시 작동하는 핸들러
     // searchParam 객체에 값 넣어서 List 컴포넌트로 전송
     const handleSearch = useCallback(() => {
-        searchParam.term = term.current;
-        searchParam.type = type.current;
-        // searchParam.sortType = sortType.current;
-        // searchParam.isDesc = isDesc.current;
-        onSearchParam(searchParam);
+        const searchParam = {
+            term: term.current,
+            type: type.current
+        };
+        onSearchParam(searchParam)
     }, [onSearchParam]);
 
     // 정렬 핸들러
@@ -75,6 +65,29 @@ export default function SearchBar({ onSearchParam }) {
                 onKeyDown={onKeyPress}
             />
             <button onClick={handleSearch}>검색</button>
+
+            {/* <div>
+                <button
+                    onClick={() => handleSort('id')}
+                    className={`${styles.sortButton} ${sortType.current === 'id' && styles.active} ${isDesc.current && styles.desc}`}
+                >
+                    id 순 정렬 {sortType.current === 'id' && (isDesc.current ? '↓' : '↑')}
+                </button>
+
+                <button
+                    onClick={() => handleSort('title')}
+                    className={`${styles.sortButton} ${sortType.current === 'title' && styles.active} ${isDesc.current && styles.desc}`}
+                >
+                    이름 순 정렬 {sortType.current === 'title' && (isDesc.current ? '↓' : '↑')}
+                </button>
+
+                <button
+                    onClick={() => handleSort('body')}
+                    className={`${styles.sortButton} ${sortType.current === 'body' && styles.active} ${isDesc.current && styles.desc}`}
+                >
+                    컨텐츠 순 정렬 {sortType.current === 'body' && (isDesc.current ? '↓' : '↑')}
+                </button>
+            </div> */}
 
         </>
     )
