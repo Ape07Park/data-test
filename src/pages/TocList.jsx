@@ -97,11 +97,25 @@ export default function TocList() {
         const startIndex = page * limit;
         const endIndex = startIndex + limit;
 
+        // 검색어 있을경우 필터링 
+
+        if (term.length !== 0) {
+
+            // 필터링된 데이터
+            let filtered = origianlTocData.filter(item =>
+                item[type].includes(term)
+            );
+            setOrigianlTocData(filtered)
+        } else {
+            setOrigianlTocData(origianlTocData)
+        }
+
         // 불러올 부분 데이터
         const nextData = origianlTocData.slice(startIndex, endIndex);
 
         // 불러올 데이터 있을 시
         if (nextData.length > 0) {
+            // 이전에 있던 것에 불러오는 부분
             setFilteredTocData(currData => [...currData, ...nextData]);
 
             // 다음 데이터 불러올 때마다 페이지 +1
@@ -125,24 +139,33 @@ export default function TocList() {
         setType(searchParams.type);
         setPage(1);
 
-        console.log(term);
-        console.log(type);
-
         // 검색어가 없을 경우
-        if (term.trim().length === 0) {
+        if (searchParams.term === 0) {
             setFilteredTocData(origianlTocData.slice(0, limit));
             setTotalCount(origianlTocData.length);
             setHasNextPage(origianlTocData.length > limit);
             return;
         }
 
-        // 검색 로직
-        const filtered = origianlTocData.filter(item =>
-            item[type].includes(term)
-        );
+        let filtered = null;
 
+        if (searchParams.type === 'related_schools') {
+            // 검색 로직
+            // 데이터 중 related_schools[0].primaryname_ko
+            filtered = origianlTocData.filter(item =>
+                item[type][0].primaryname_ko.includes(searchParams.term)
+            );
+
+        } else {
+            // 검색 로직
+            filtered = origianlTocData.filter(item =>
+                item[type].includes(searchParams.term)
+            );
+        }
+        
         setFilteredTocData(filtered);
         setTotalCount(filtered.length);
+        // 무한 스크롤 스탑
         setHasNextPage(filtered.length > limit);
     };
 

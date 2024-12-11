@@ -55,7 +55,7 @@ export default function SearchBar({ onSearchParam }) {
             <select onChange={handleType} value={type.current}>
                 <option value="toc_title_ko">학교 이름</option>
                 <option value="toc_authors">저자</option>
-                <option value="related_schools.primaryname_ko">관련 학교</option>
+                <option value="related_schools">관련 학교</option>
             </select>
             
             <input
