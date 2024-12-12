@@ -25,8 +25,6 @@ export default function SearchBar({ onSearchParam }) {
     // 타입 변경 핸들러
     const handleType = (e) => {
         type.current = e.target.value;
-        // 검색 버튼 클릭 시 타입 전송 
-        // handleSearch()
     }
 
     const onKeyPress = (e) => {
@@ -35,27 +33,38 @@ export default function SearchBar({ onSearchParam }) {
         }
     };
 
-    // 검색 버튼 클릭 시 작동하는 핸들러
+    /**
+     *  검색 버튼 클릭 시 입력된 값을 전달하는 핸들러
+     */
     // searchParam 객체에 값 넣어서 List 컴포넌트로 전송
     const handleSearch = useCallback(() => {
+        // 지금 입력되어 있는 값을 객체의 각 속성에 할당
         const searchParam = {
             term: term.current,
             type: type.current,
             sortType: sortType.current,
             isDesc: isDesc.current,
         };
-        
+        // 
         onSearchParam(searchParam)
     }, [onSearchParam]);
 
     // 정렬 핸들러
     const handleSort = (newSortType) => {
+        // 선택한 것과 현재 정렬타입이 일치할 경우
         if (newSortType === sortType.current) {
+            // 순서만 변경
             isDesc.current = !isDesc.current;
         } else {
+            // 정렬타입 불일치 시 새 타입 넣기
             sortType.current = newSortType;
+            // 새 정렬 타입을 넣었으니 오름차순으로 변경
             isDesc.current = false;
         }
+
+        // TODO 검색 명령이 일어나서 전체를 정렬함 - 배열 안의 데이터를 전부 정렬 - ? 데이터를 앞에 보이는 10개씩 정렬할까?
+
+        // 검색 명령 내리기
         handleSearch();
     };
 
@@ -85,7 +94,7 @@ export default function SearchBar({ onSearchParam }) {
                 <button
                     onClick={() => handleSort('toc_authors')}
                 >
-                    이름 순 정렬 {sortType.current === 'toc_authors' && (isDesc.current ? '↓' : '↑')}
+                    작가 순 정렬 {sortType.current === 'toc_authors' && (isDesc.current ? '↓' : '↑')}
                 </button>
 
                 <button

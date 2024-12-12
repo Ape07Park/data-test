@@ -108,12 +108,10 @@ export default function TocList() {
                 item[type].includes(term)
             );
 
+            // 정렬
+            let sortedData = sortData(filtered, sortType, isDesc);
 
-            
-
-
-            // 정렬된 데이터 넣기
-            setOrigianlTocData(filtered)
+            setOrigianlTocData(sortedData)
         } else {
             setOrigianlTocData(origianlTocData)
         }
@@ -155,7 +153,9 @@ export default function TocList() {
             return;
         }
 
+        // 카테고리에 따라 달라지는 데이터 넣기 위함
         let filtered = null;
+
         if (searchParams.type === 'related_schools') {
 
             // 관련 학교 검색 시
@@ -164,11 +164,14 @@ export default function TocList() {
             );
 
         } else {
-            // 검색 로직
+            // 관련 학교외 나머지 검색 시
             filtered = origianlTocData.filter(item =>
                 item[searchParams.type].includes(searchParams.term)
             );
         }
+
+        // 카테고리로 검색한 데이터 정렬기능
+        filtered = sortData(filtered, searchParams.type, searchParams.isDesc);
 
         setFilteredTocData(filtered);
         setTotalCount(filtered.length);
@@ -176,32 +179,41 @@ export default function TocList() {
         setHasNextPage(filtered.length > limit);
     };
 
-    // 정렬 함수 
-    // if (searchParams.sortType === 'toc_title_ko' & searchParams.isDesc !== null ){
-    //     // 정렬: 오름, 내림
-    //     if(searchParams.isDesc === true){
-    //         // 내림
-    //     } else{
-    //         // 오름
-    //     }
-    // } else if(searchParams.sortType === 'toc_authors' & searchParams.isDesc !== null) {
-    //      // 정렬: 오름, 내림
-    //      if(searchParams.isDesc === true){
-    //         // 내림
-    //     } else{
-    //         // 오름
-    //     }
-    // } else if (searchParams.sortType === 'related_schools' & searchParams.isDesc !== null){
-    //      // 정렬: 오름, 내림
-    //      if(searchParams.isDesc === true){
-    //         // 내림
-    //     } else{
-    //         // 오름
-    //     }
-    // } else {
-    //     // 정렬: 기본값 
-    //     return;
-    // }
+    /**
+     * 
+     * @param {*} data 데이터
+     * @param {*} sortType 정렬 타입
+     * @param {*} isDesc 내림차순 여부
+     * 
+     */
+    const sortData = (data, sortType, isDesc) => {
+        return data.sort((a, b) => {
+
+            // 정렬 기준
+            let comparison = 0;
+
+            switch (sortType) {
+                case 'toc_title_ko':
+                    comparison = a.toc_title_ko.localeCompare(b.toc_title_ko, 'ko');
+                    break;
+
+                case 'toc_authors':
+                    comparison = a.toc_authors.localeCompare(b.toc_authors, 'ko');
+                    break;
+
+                case 'related_schools':
+                    comparison = a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko, 'ko');
+                    break;
+
+                // 정렬 x
+                default:
+                    return 0;
+            }
+
+            // 내림차순이면 원래 정렬에서 반대로
+            return isDesc ? -comparison : comparison;
+        });
+    };
 
     return (
         <>
