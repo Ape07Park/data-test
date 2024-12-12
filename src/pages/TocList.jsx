@@ -19,7 +19,7 @@ export default function TocList() {
     const [term, setTerm] = useState("");
     const [type, setType] = useState("toc_title_ko")
 
-    const [sortType, setSortType] = useState("toc_title_ko");
+    const [sortType, setSortType] = useState("");
     const [isDesc, setIsDesc] = useState(false);
 
     const observeTarget = useRef();
@@ -145,13 +145,32 @@ export default function TocList() {
         setType(searchParams.type);
         setPage(1);
 
-        // 검색어가 없을 경우
-        if (searchParams.term === 0) {
+        // TODO: 검색어 없을 시 정렬만 따로 뺴야하나?
+
+        console.log(searchParams.term.length);
+
+        console.log(searchParams.sortType.length);
+        
+        
+
+        // 검색어가 없고 정렬만 할 경우
+        if(searchParams.term.length === 0 && searchParams.sortType.length !== 0){
+            setFilteredTocData(origianlTocData.slice(0, limit));
+            setTotalCount(origianlTocData.length);
+            setHasNextPage(origianlTocData.length > limit);
+            sortData(origianlTocData, searchParams.sortType, searchParams.isDesc)
+            return;
+        }
+
+         // 검색어가 없을 경우
+        else if (searchParams.term === 0) {
             setFilteredTocData(origianlTocData.slice(0, limit));
             setTotalCount(origianlTocData.length);
             setHasNextPage(origianlTocData.length > limit);
             return;
-        }
+        } 
+
+        // 검색어도 없고 버튼 클릭도 없을 경우
 
         // 카테고리에 따라 달라지는 데이터 넣기 위함
         let filtered = null;
