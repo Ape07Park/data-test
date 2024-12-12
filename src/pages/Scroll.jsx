@@ -1,69 +1,48 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../services/axios";
 
+
 export default function Scroll() {
 
     const [page, setPage] = useState(1);
-    const [tocData, setTocData] = useState([]);
-    const [totalCount, setTotalCount] = useState(0);
-    const [hasNextPage, setHasNextPage] = useState(true);
-
-    const limit = 10;
-
-    // 데이터 불러오는 api
-    const getData = async (page) => {
-        try {
-            const response = await axiosInstance.get(`data?_page=${page}&_limit=${limit}`);
-            const res = response.data;
-            const totalCount = parseInt(response.headers['x-total-count'], 10);
-            setTocData(prevData => [...prevData, ...res]);
-            setTotalCount(totalCount);
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    const [originData, setOriginData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
+    const[totalCnt, setTotalCnt] = useState(0);
 
     useEffect(() => {
-        getData(page);
-        setHasNextPage(tocData < totalCount)
-    }, [page]);
 
-    /**
-     * div 높이가 ~~ 되면 데이터 가져오는 api 호출
-     * api 호출 시 현재 위치 확인해 마지막 페이지면 그냥 return 하기 
-     */
+        const getData = async () => {
+            try{
+                const response = await axiosInstance.get('data');
+                const res = response.data;
+                setOriginData(res);
+                setTotalCnt(res.length);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            // 화면에 보이는 거 + 세로 스크롤 위치 (현재 보이는 영역의 가장 아래 부분의 위치) >= 문서 전체 높이
-
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {  
-                if(hasNextPage === true)  {
-                    setPage(prevPage => prevPage + 1);
-                } else {
-                    return;
-                }
+            } catch (e){
+                console.log(e);
             }
-        };
-        
-        window.addEventListener('scroll', handleScroll);
-            return () => window.removeEventListener('scroll', handleScroll);
-        }, []);
+        }
+        getData();
+    }, []);
 
     return (
         <>
-            <h2 style={{ textAlign: 'center' }}>스크롤 연습</h2>
-            <div>검색 결과: {totalCount}</div>
-
-            <div>
-                {tocData.map((data, i) => (
-                    <ul key={i}>
-                        <li>{data.toc_id}</li>
-                        <li>{data.toc_title_ko}</li>
-                    </ul>
-                ))}
-            </div>
-            
+        <h1>무한 스크롤</h1>
+        <p>총 개수: {totalCnt}</p>
+        <div>
+            {
+            originData.map((data, i) => (
+                <ul key={i}>
+                    <li>학교 번호: {data.toc_id}</li>
+                    <li>학교 이름: {data.toc_title}</li>
+                    <li>학교 이름(한글): {data.toc_title_ko}</li>
+                    <li>저자: {data.toc_authors === null ? '없음' : data.toc_authors}</li>
+                    <li>관련 학교: {data.related_schools[0].primaryname}</li>
+                    <li>관련 학교(한글): {data.related_schools[0].primaryname_ko === null ? '없음' : data.related_schools[0].primaryname_ko}</li>
+                </ul>
+            ))
+            }
+        </div>
         </>
     );
 }
