@@ -199,7 +199,7 @@ export default function TocList() {
     };
 
     /**
-     * 
+     * 데이터 정렬
      * @param {*} data 데이터
      * @param {*} sortType 정렬 타입
      * @param {*} isDesc 내림차순 여부

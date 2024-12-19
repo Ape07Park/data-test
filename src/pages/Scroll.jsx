@@ -24,17 +24,11 @@ export default function Scroll() {
         const getData = async () => {
             try {
                 const response = await axiosInstance.get('data');
-                const res = response.data;
-
-                // 이거는 배열에 넣기 위함이지 조작을 위한 데이터가 아님
+                const res = await response.data;
                 setOriginData(res);
                 setTotalCnt(res.length);
-
                 setFilteredData(res.slice(0, limit));
                 index.current = 10;
-
-                // 데이터 10개 씩 쪼개기
-                // 쪼갠 데이터 10개 씩 보여주기
             } catch (e) {
                 console.log(e);
             }
@@ -44,6 +38,15 @@ export default function Scroll() {
 
     // 관찰자 설정
     useEffect(() => {
+        // 콜백 함수
+        const onIntersection = (entries) => {
+            entries.forEach((entry) => {
+                let firstEntry = entry
+                if (firstEntry.isIntersecting === true && hasNextPage === true) {
+                    getMoreData();
+                }
+            })
+        }
         const observer = new IntersectionObserver(onIntersection)
 
         if (observerRef.current !== null) {
@@ -51,36 +54,32 @@ export default function Scroll() {
         }
 
         return () => {
-            if (observer.isIntersecting) {
+            if (observerRef.current) {
                 observer.unobserve(observerRef.current);
             }
+            observer.disconnect();
         };
     }, [hasNextPage])
 
-
-    // 콜백 함수
-    const onIntersection = (entries) => {
-        entries.forEach((entry) => {
-            let firstEntry = entry
-            if (firstEntry.isIntersecting) {
-                getMoreData();
-            }
-        })
-    }
-
     // 추가 데이터 가져오기
-    const getMoreData = () => {
-        if (hasNextPage === true){
-            setPage(page + 1);
-            let moreData = originData.slice(index.current, index.current + 10);
-            setFilteredData(prevData => [...prevData], [...moreData])
-            index.current = index.current + 10;
-        } else{
-            setHasNextPage(false);
+    const getMoreData = async () => {
+
+        console.log('진입');
+
+        if (originData.length !== 0) {
+
+            if (hasNextPage === true) {
+
+                let moreData = originData.slice(index.current, index.current + 10);
+                setFilteredData(prevData => [...prevData, ...moreData])
+                index.current = index.current + 10;
+                setPage(page + 1);
+            } else {
+                setHasNextPage(false);
+            }
         }
     }
 
-    // 데이터 10개 추가로 가져오기
     return (
         <>
             <h1>무한 스크롤</h1>
