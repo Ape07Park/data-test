@@ -1,16 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "../services/axios";
 
-
 export default function Scroll() {
-
-    /**
-     * 무한 스크롤 구현 시 필요한 거
-     * 1) 데이터 10개씩 가져오기
-     * 2) 바닥에 닿았다는 기준
-     * 3) 
-     */
-
     const limit = 10;
     const [page, setPage] = useState(1);
     const [originData, setOriginData] = useState([]);
@@ -27,7 +18,8 @@ export default function Scroll() {
                 const res = await response.data;
                 setOriginData(res);
                 setTotalCnt(res.length);
-                setFilteredData(res.slice(0, limit));
+                const initialData = res.slice(0, limit);
+                setFilteredData(initialData);
                 index.current = 10;
             } catch (e) {
                 console.log(e);
@@ -59,25 +51,25 @@ export default function Scroll() {
             }
             observer.disconnect();
         };
-    }, [hasNextPage])
+        // 처음 실행 시에는 originData에 값이 없다. 이유는 비동기라 나중에 채워짐 그래서 getMoreData를 해도 originData에 값이 없어 작동 x 
+        // 그러나 page가 올라가서 함수가 다시 실행될 때는 originData에 값이 있는 상태라 작동한다.
+    }, [hasNextPage, page])
 
     // 추가 데이터 가져오기
     const getMoreData = async () => {
+        
+        if (hasNextPage === true) {
+                console.log('진입');
 
-        console.log('진입');
-
-        if (originData.length !== 0) {
-
-            if (hasNextPage === true) {
-
-                let moreData = originData.slice(index.current, index.current + 10);
+                const moreData = originData.slice(index.current, index.current + 10);
                 setFilteredData(prevData => [...prevData, ...moreData])
                 index.current = index.current + 10;
                 setPage(page + 1);
+                // 여기서 조건 달아서 마지막 페이지면 nextPage false로 만들기
             } else {
                 setHasNextPage(false);
             }
-        }
+        
     }
 
     return (
