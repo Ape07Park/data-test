@@ -14,7 +14,6 @@ export default function SearchStudy({ onSearch }) {
 
     const handleSearch = () => {
         let searchTerm = term.current;
-        console.log(term);
         onSearch(searchTerm)
     }
 

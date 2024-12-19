@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import axiosInstance from "../services/axios";
 import SearchStudy from "../components/SearchStudy";
 
-
 export default function Scroll() {
     const limit = 10;
     const [page, setPage] = useState(1);
@@ -70,20 +69,23 @@ export default function Scroll() {
         } else {
             setHasNextPage(false);
         }
-
     }
 
     // 검색 수행
     const handleSearch = (term) => {
         // originData에서 검색어에 맞는 거만 골라서 꺼내기
-
         setPage(1);
-        let searchData = originData.filter(data => {
-            data.toc_title.includes(term);
-        })
+
+        let searchData = originData.filter(data => 
+            data.toc_title_ko.includes(term)
+        )
+
+        console.log(searchData);
+        
 
         setFilteredData(searchData);
-        setTotalCnt(searchData);
+        setTotalCnt(searchData.length);
+        setHasNextPage(searchData.length > limit);
     }
 
     return (
