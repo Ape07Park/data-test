@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import axiosInstance from "../services/axios";
+import SearchStudy from "../components/SearchStudy";
+
 
 export default function Scroll() {
     const limit = 10;
@@ -11,16 +13,11 @@ export default function Scroll() {
     const observerRef = useRef(null);
     const index = useRef(0);
 
-    /**
-     * 
-     */
-
     useEffect(() => {
         const getData = async () => {
             try {
                 const response = await axiosInstance.get('data');
                 const res = await response.data;
-               
                 setOriginData(res);
                 setTotalCnt(res.length);
                 const initialData = res.slice(0, limit);
@@ -40,7 +37,6 @@ export default function Scroll() {
             entries.forEach((entry) => {
                 let firstEntry = entry
                 if (firstEntry.isIntersecting === true && hasNextPage === true) {
-                    
                     getMoreData();
                 }
             })
@@ -63,23 +59,37 @@ export default function Scroll() {
 
     // 추가 데이터 가져오기
     const getMoreData = async () => {
-        
+
         if (hasNextPage === true) {
-                 // *처음 랜더링 시에는 비동기로 인해 originData가 빈 배열이다.
-                const moreData = originData.slice(index.current, index.current + 10);
-                setFilteredData(prevData => [...prevData, ...moreData])
-                index.current = index.current + 10;
-                setPage(page + 1);
-                // 여기서 조건 달아서 마지막 페이지면 nextPage false로 만들기
-            } else {
-                setHasNextPage(false);
-            }
-        
+            // *처음 랜더링 시에는 비동기로 인해 originData가 빈 배열이다.
+            const moreData = originData.slice(index.current, index.current + 10);
+            setFilteredData(prevData => [...prevData, ...moreData])
+            index.current = index.current + 10;
+            setPage(page + 1);
+            // 여기서 조건 달아서 마지막 페이지면 nextPage false로 만들기
+        } else {
+            setHasNextPage(false);
+        }
+
+    }
+
+    // 검색 수행
+    const handleSearch = (term) => {
+        // originData에서 검색어에 맞는 거만 골라서 꺼내기
+
+        setPage(1);
+        let searchData = originData.filter(data => {
+            data.toc_title.includes(term);
+        })
+
+        setFilteredData(searchData);
+        setTotalCnt(searchData);
     }
 
     return (
         <>
             <h1>무한 스크롤</h1>
+            <SearchStudy onSearch={handleSearch} />
             <p>총 개수: {totalCnt}</p>
             <div>
                 {
