@@ -11,11 +11,16 @@ export default function Scroll() {
     const observerRef = useRef(null);
     const index = useRef(0);
 
+    /**
+     * 
+     */
+
     useEffect(() => {
         const getData = async () => {
             try {
                 const response = await axiosInstance.get('data');
                 const res = await response.data;
+               
                 setOriginData(res);
                 setTotalCnt(res.length);
                 const initialData = res.slice(0, limit);
@@ -35,11 +40,12 @@ export default function Scroll() {
             entries.forEach((entry) => {
                 let firstEntry = entry
                 if (firstEntry.isIntersecting === true && hasNextPage === true) {
+                    
                     getMoreData();
                 }
             })
         }
-        const observer = new IntersectionObserver(onIntersection)
+        const observer = new IntersectionObserver(onIntersection);
 
         if (observerRef.current !== null) {
             observer.observe(observerRef.current);
@@ -52,15 +58,14 @@ export default function Scroll() {
             observer.disconnect();
         };
         // 처음 실행 시에는 originData에 값이 없다. 이유는 비동기라 나중에 채워짐 그래서 getMoreData를 해도 originData에 값이 없어 작동 x 
-        // 그러나 page가 올라가서 함수가 다시 실행될 때는 originData에 값이 있는 상태라 작동한다.
+        // 그러나 page가 올라가서 리랜더링이 발생하고 useEffect의 함수가 다시 실행될 때는 originData에 값이 있는 상태라 작동한다.
     }, [hasNextPage, page])
 
     // 추가 데이터 가져오기
     const getMoreData = async () => {
         
         if (hasNextPage === true) {
-                console.log('진입');
-
+                 // *처음 랜더링 시에는 비동기로 인해 originData가 빈 배열이다.
                 const moreData = originData.slice(index.current, index.current + 10);
                 setFilteredData(prevData => [...prevData, ...moreData])
                 index.current = index.current + 10;
