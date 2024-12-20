@@ -12,6 +12,8 @@ export default function Scroll() {
     const [hasNextPage, setHasNextPage] = useState(true);
     const observerRef = useRef(null);
     const index = useRef(0);
+    const [sortType, setSortType] = useState('toc_id');
+    const [isDesc, setIsDesc] = useState(false);
 
     useEffect(() => {
         const getData = async () => {
@@ -125,7 +127,7 @@ export default function Scroll() {
             </div>
 
             <div ref={observerRef}>로딩 중...</div>
-            
+
             {hasNextPage === false &&
                 <div>모든 데이터가 랜더링 되었습니다.</div>
             }
