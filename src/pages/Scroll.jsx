@@ -14,6 +14,7 @@ export default function Scroll() {
     const index = useRef(0);
     const [sortType, setSortType] = useState('toc_id');
     const [isDesc, setIsDesc] = useState(false);
+    const [isSearch, setIsSearch] = useState(false);
 
     useEffect(() => {
         const getData = async () => {
@@ -81,8 +82,6 @@ export default function Scroll() {
         }
     }
 
-    // TODO sort는 따로 놔두어서 그런 듯
-
     // 검색 수행
     const handleSearch = (type, term) => {
         // originData에서 검색어에 맞는 거만 골라서 꺼내기
@@ -98,98 +97,119 @@ export default function Scroll() {
                 data[type].includes(term)
             )
         }
-        // 오름차순, 내림차순 정렬하기
-        searchData = sortData(searchData, sortType, isDesc);
 
-        console.log(searchData);
-
+        setIsSearch(true);
         setFilteredData(searchData);
         setTotalCnt(searchData.length);
         // 데이터가 더 있는지 없는지 확인
         setHasNextPage(searchData.length > limit);
     }
 
+    // 검색 후 정렬: 검색어
+
     // searchStudy에서 받은 정렬 기준들 상태값에 넣기
     const handleSort = (sortType, isDesc) => {
+
+        // 검색했음 여부 확인하기
+        // 여기서 분기를 한번 나누는 건 어때? 
 
         setSortType(sortType);
         setIsDesc(isDesc);
 
-        // sort
         let sortedData;
+        let data;
 
-        if (isDesc === false) {
-            // 오름차순
-            // 타입에 맞게 데이터 정렬하기
-            switch (sortType) {
-                case 'toc_id':
-                    sortedData = originData.sort((a, b) => a.toc_id - b.toc_id);
-                    return sortedData;
-                case 'toc_title_ko':
-                    sortedData = originData.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
-                    return sortedData;
-                case 'related_schools':
-                    sortedData = originData.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
-                    return sortedData;
+        if (isSearch === true) {
+             console.log('검색 했음');
+             
+            
+            // 검색 했음
+            data = filteredData;
+
+            if (isDesc === false) {
+                // 오름차순
+                // 타입에 맞게 데이터 정렬하기
+                switch (sortType) {
+                    case 'toc_id':
+                        sortedData = data.sort((a, b) => a.toc_id - b.toc_id);
+                        setFilteredData(sortedData);
+                        break;
+                    case 'toc_title_ko':
+                        sortedData = data.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
+                        setFilteredData(sortedData);
+                        break;
+                    case 'related_schools':
+                        sortedData = data.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
+                        setFilteredData(sortedData);
+                        break;
+                }
+                // 내림차순
+            } else {
+                // 타입에 맞게 데이터 정렬하기
+                switch (sortType) {
+                    case 'toc_id':
+                        sortedData = data.sort((a, b) => b.toc_id - a.toc_id);
+                        setFilteredData(sortedData);
+                        break;
+                    case 'toc_title_ko':
+                        sortedData = data.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
+                        setFilteredData(sortedData);
+                        break;
+                    case 'related_schools':
+                        sortedData = data.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
+                        setFilteredData(sortedData);
+                        break;
+                }
             }
-            // 내림차순
+
         } else {
-            // 타입에 맞게 데이터 정렬하기
-            switch (sortType) {
-                case 'toc_id':
-                    sortedData = originData.sort((a, b) => b.toc_id - a.toc_id);
-                    return sortedData;
-                case 'toc_title_ko':
-                    sortedData = originData.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
-                    return sortedData;
-                case 'related_schools':
-                    sortedData = originData.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
-                    return sortedData;
+            console.log('검색 안함 진입');
+            
+            // 검색 안했음
+            data = originData
+
+            if (isDesc === false) {
+                // 오름차순
+                // 타입에 맞게 데이터 정렬하기
+                switch (sortType) {
+                    case 'toc_id':
+                        sortedData = data.sort((a, b) => a.toc_id - b.toc_id);
+                        setFilteredData(sortedData);
+                        break;
+                    case 'toc_title_ko':
+                        sortedData = data.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
+                        setFilteredData(sortedData);
+                        break;
+                    case 'related_schools':
+                        sortedData = data.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
+                        setFilteredData(sortedData);
+                        break;
+                }
+                // 내림차순
+            } else {
+                // 타입에 맞게 데이터 정렬하기
+                switch (sortType) {
+                    case 'toc_id':
+                        sortedData = data.sort((a, b) => b.toc_id - a.toc_id);
+                        setFilteredData(sortedData);
+                        break;
+                    case 'toc_title_ko':
+                        sortedData = data.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
+                        setFilteredData(sortedData);
+                        break;
+                    case 'related_schools':
+                        sortedData = data.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
+                        setFilteredData(sortedData);
+                        break;
+                }
             }
+
         }
 
-        //  정렬된 값 set하기
-        
     }
 
-    // TODO 현재 검색을 눌러야 정렬 기능도 같이간다. 따라서 정렬 버튼을 눌러도 검색이 되도록 하자
-
-    // 정렬 기준 버튼 클릭 - 정렬 기준 값 넘기기 - 넘긴 값 받기 - 정렬 기준 값 보기 - 정렬 기준 값으로 오름차순, 내림차순 수행
-    // 정렬 수행 함수
-    const sortData = (data, sort, isDesc) => {
-
-        let sortedData;
-
-        if (isDesc === false) {
-            // 오름차순
-            // 타입에 맞게 데이터 정렬하기
-            switch (sort) {
-                case 'toc_id':
-                    sortedData = data.sort((a, b) => a.toc_id - b.toc_id);
-                    return sortedData;
-                case 'toc_title_ko':
-                    sortedData = data.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
-                    return sortedData;
-                case 'related_schools':
-                    sortedData = data.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
-                    return sortedData;
-            }
-            // 내림차순
-        } else {
-            // 타입에 맞게 데이터 정렬하기
-            switch (sort) {
-                case 'toc_id':
-                    sortedData = data.sort((a, b) => b.toc_id - a.toc_id);
-                    return sortedData;
-                case 'toc_title_ko':
-                    sortedData = data.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
-                    return sortedData;
-                case 'related_schools':
-                    sortedData = data.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
-                    return sortedData;
-            }
-        }
-    }
+    // 검색 후 정렬 수행 함수
+    
 
     return (
         <>

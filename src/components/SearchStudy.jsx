@@ -28,11 +28,6 @@ export default function SearchStudy({ onSearch, onSort }) {
         type.current = e.target.value;
     }
 
-    // TODO 검색, 정렬은 따로 가야한다.
-
-    // 검색창에 값을 넣을 때마다 term에 계속 반영된다
-
-    // 정렬 타입을 따로 하는 것이 좋을까? 아니면 같이 handleSearch에 넣는 것이 좋을까?
     const handleSort = (e) => {
         sortType.current = e.target.value;
         // 현재와 반대로 되게 하기
