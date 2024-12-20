@@ -12,7 +12,6 @@ export default function Scroll() {
     const [hasNextPage, setHasNextPage] = useState(true);
     const observerRef = useRef(null);
     const index = useRef(0);
-    
 
     useEffect(() => {
         const getData = async () => {
@@ -70,30 +69,38 @@ export default function Scroll() {
             index.current = endIndex;
             setPage(page + 1);
 
-           // 처음 랜더링 시 totalCnt가 0으로 나옴, 그래서 totalCnt !== 0 추가함
+            // 처음 랜더링 시 totalCnt가 0으로 나옴, 그래서 totalCnt !== 0 추가함
             // 현제 인덱스와 총 아이템 개수를 비교
             if (totalCnt < index.current && totalCnt !== 0) {
-                console.log('진입');
-
                 setHasNextPage(false)
             }
-
         } else {
             setHasNextPage(false);
         }
     }
 
     // 검색 수행
-    const handleSearch = (term) => {
+    const handleSearch = (type, term) => {
         // originData에서 검색어에 맞는 거만 골라서 꺼내기
         setPage(1);
+        let searchData = null;
 
-        let searchData = originData.filter(data => 
-            data.toc_title_ko.includes(term)
-        )
+        if (type === "related_schools") {
+            searchData = originData.filter(data =>
+                data.related_schools[0].primaryname_ko.includes(term)
+            )
+
+        } else {
+            searchData = originData.filter(data =>
+                data[type].includes(term)
+            )
+        }
+
+        // 타입에 맞게 데이터 필터링 하기
 
         setFilteredData(searchData);
         setTotalCnt(searchData.length);
+        //
         setHasNextPage(searchData.length > limit);
     }
 
@@ -116,7 +123,9 @@ export default function Scroll() {
                     ))
                 }
             </div>
+
             <div ref={observerRef}>로딩 중...</div>
+            
             {hasNextPage === false &&
                 <div>모든 데이터가 랜더링 되었습니다.</div>
             }
