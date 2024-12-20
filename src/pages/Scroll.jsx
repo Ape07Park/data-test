@@ -3,6 +3,7 @@ import axiosInstance from "../services/axios";
 import SearchStudy from "../components/SearchStudy";
 
 export default function Scroll() {
+
     const limit = 10;
     const [page, setPage] = useState(1);
     const [originData, setOriginData] = useState([]);
@@ -11,6 +12,7 @@ export default function Scroll() {
     const [hasNextPage, setHasNextPage] = useState(true);
     const observerRef = useRef(null);
     const index = useRef(0);
+    
 
     useEffect(() => {
         const getData = async () => {
@@ -61,11 +63,21 @@ export default function Scroll() {
 
         if (hasNextPage === true) {
             // *처음 랜더링 시에는 비동기로 인해 originData가 빈 배열이다.
-            const moreData = originData.slice(index.current, index.current + 10);
+            const startIndex = index.current;
+            const endIndex = index.current + limit
+            const moreData = originData.slice(startIndex, endIndex);
             setFilteredData(prevData => [...prevData, ...moreData])
-            index.current = index.current + 10;
+            index.current = endIndex;
             setPage(page + 1);
-            // 여기서 조건 달아서 마지막 페이지면 nextPage false로 만들기
+
+           // 처음 랜더링 시 totalCnt가 0으로 나옴, 그래서 totalCnt !== 0 추가함
+            // 현제 인덱스와 총 아이템 개수를 비교
+            if (totalCnt < index.current && totalCnt !== 0) {
+                console.log('진입');
+
+                setHasNextPage(false)
+            }
+
         } else {
             setHasNextPage(false);
         }
@@ -79,9 +91,6 @@ export default function Scroll() {
         let searchData = originData.filter(data => 
             data.toc_title_ko.includes(term)
         )
-
-        console.log(searchData);
-        
 
         setFilteredData(searchData);
         setTotalCnt(searchData.length);
