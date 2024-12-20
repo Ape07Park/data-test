@@ -81,6 +81,8 @@ export default function Scroll() {
         }
     }
 
+    // TODO sort는 따로 놔두어서 그런 듯
+
     // 검색 수행
     const handleSearch = (type, term) => {
         // originData에서 검색어에 맞는 거만 골라서 꺼내기
@@ -91,25 +93,108 @@ export default function Scroll() {
             searchData = originData.filter(data =>
                 data.related_schools[0].primaryname_ko.includes(term)
             )
-
         } else {
             searchData = originData.filter(data =>
                 data[type].includes(term)
             )
         }
+        // 오름차순, 내림차순 정렬하기
+        searchData = sortData(searchData, sortType, isDesc);
 
-        // 타입에 맞게 데이터 필터링 하기
+        console.log(searchData);
 
         setFilteredData(searchData);
         setTotalCnt(searchData.length);
-        //
+        // 데이터가 더 있는지 없는지 확인
         setHasNextPage(searchData.length > limit);
+    }
+
+    // searchStudy에서 받은 정렬 기준들 상태값에 넣기
+    const handleSort = (sortType, isDesc) => {
+
+        setSortType(sortType);
+        setIsDesc(isDesc);
+
+        // sort
+        let sortedData;
+
+        if (isDesc === false) {
+            // 오름차순
+            // 타입에 맞게 데이터 정렬하기
+            switch (sortType) {
+                case 'toc_id':
+                    sortedData = originData.sort((a, b) => a.toc_id - b.toc_id);
+                    return sortedData;
+                case 'toc_title_ko':
+                    sortedData = originData.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
+                    return sortedData;
+                case 'related_schools':
+                    sortedData = originData.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
+                    return sortedData;
+            }
+            // 내림차순
+        } else {
+            // 타입에 맞게 데이터 정렬하기
+            switch (sortType) {
+                case 'toc_id':
+                    sortedData = originData.sort((a, b) => b.toc_id - a.toc_id);
+                    return sortedData;
+                case 'toc_title_ko':
+                    sortedData = originData.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
+                    return sortedData;
+                case 'related_schools':
+                    sortedData = originData.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
+                    return sortedData;
+            }
+        }
+
+        //  정렬된 값 set하기
+        
+    }
+
+    // TODO 현재 검색을 눌러야 정렬 기능도 같이간다. 따라서 정렬 버튼을 눌러도 검색이 되도록 하자
+
+    // 정렬 기준 버튼 클릭 - 정렬 기준 값 넘기기 - 넘긴 값 받기 - 정렬 기준 값 보기 - 정렬 기준 값으로 오름차순, 내림차순 수행
+    // 정렬 수행 함수
+    const sortData = (data, sort, isDesc) => {
+
+        let sortedData;
+
+        if (isDesc === false) {
+            // 오름차순
+            // 타입에 맞게 데이터 정렬하기
+            switch (sort) {
+                case 'toc_id':
+                    sortedData = data.sort((a, b) => a.toc_id - b.toc_id);
+                    return sortedData;
+                case 'toc_title_ko':
+                    sortedData = data.sort((a, b) => a.toc_title_ko.localeCompare(b.toc_title_ko));
+                    return sortedData;
+                case 'related_schools':
+                    sortedData = data.sort((a, b) => a.related_schools[0].primaryname_ko.localeCompare(b.related_schools[0].primaryname_ko));
+                    return sortedData;
+            }
+            // 내림차순
+        } else {
+            // 타입에 맞게 데이터 정렬하기
+            switch (sort) {
+                case 'toc_id':
+                    sortedData = data.sort((a, b) => b.toc_id - a.toc_id);
+                    return sortedData;
+                case 'toc_title_ko':
+                    sortedData = data.sort((a, b) => b.toc_title_ko.localeCompare(a.toc_title_ko));
+                    return sortedData;
+                case 'related_schools':
+                    sortedData = data.sort((a, b) => b.related_schools[0].primaryname_ko.localeCompare(a.related_schools[0].primaryname_ko));
+                    return sortedData;
+            }
+        }
     }
 
     return (
         <>
-            <h1>무한 스크롤</h1>
-            <SearchStudy onSearch={handleSearch} />
+            <h1>Infinite Scroll</h1>
+            <SearchStudy onSearch={handleSearch} onSort={handleSort} />
             <p>총 개수: {totalCnt}</p>
             <div>
                 {
